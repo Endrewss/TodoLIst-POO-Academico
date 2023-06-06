@@ -1,46 +1,68 @@
-<!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
--->
-<html>
+<!doctype html>
+<html lang="en">
     <head>
-        <title>Test</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Bootstrap demo</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
     <body>
         <script>
             async function request(url = "", methd, data) {
-                const response = await fetch (url, {
+                const response = await fetch(url, {
                     method: methd,
-                    headers: {"Content-Type": "application/json",},
+                    headers: {"Content-Type": "application/json", },
                     body: JSON.stringify(data)
                 });
                 return response.json();
             }
             
-            request("http://localhost:8080/CRUD/tasks", "POST", {title: "Tarefa 1"}).then((data) => {
-                document.write("<hr>Posting 'Tarefa 1':<br>");
-                document.write(JSON.stringify(data));
-                request("http://localhost:8080/CRUD/tasks", "POST", {title: "Tarefa 2"}).then((data) => {
-                    document.write("<hr>Posting 'Tarefa 1':<br>");
-                    document.write(JSON.stringify(data));
-                    request("http://localhost:8080/CRUD/tasks", "GET").then((data) => {
-                        document.write("<hr>Getting:<br>");
-                        document.write(JSON.stringify(data));
-                        request("http://localhost:8080/CRUD/tasks?title=Tarefa 1", "DELETE").then((data) => {
-                            document.write("<hr>Deleting 'Tarefa 1':<br>");
-                            document.write(JSON.stringify(data));
-                            request("http://localhost:8080/CRUD/tasks", "GET").then((data) => {
-                                document.write("<hr>Getting:<br>");
-                                document.write(JSON.stringify(data));
-
-                            });
+            function tasks() {
+                return{
+                    newTaskTitle: '', //título definido pelo usuário no input
+                    list: [], //array vazio para armazenar as tarefas
+                    async loadTasks() {
+                        request("/CRUD/tasks", "GET"),then((data) => {
+                            this.list = data.list;
                         });
-                    });
-                });
-            });
+                    }, async addTask() {
+                        request("/CRUD/tasks", "POST", { title: this.newTaskTitle }).then((data) => {
+                            this.newTaskTitle = ''; //limpa o texto depois que o usuário enviou
+                            this.list = data.list;
+                        });
+                    }, async removeTask(taskTitle) {
+                        request("/CRUD/tasks?title="+taskTitle, "DELETE").then((data) => {
+                            this.list = data.list;
+                        });
+                    }
+                }
+            }
         </script>
+        <nav class="navbar bg-body-tertiary">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">To Do List</span>
+            </div>
+        </nav>
+        
+        <div class="container- m-2" x-data="tasks()" x-init="loadTasks()">
+            <div class="input-group-mb-3">
+                <input type="text" class="form-control" x-model="newTaskTitle" placeholder="New task">
+                <button class="btn btn-primary" type="button" x-on:click="addTask()">+</button>
+            </div>
+            
+            <table class="table">
+                <template x-for="task in list">
+                    <tr>
+                        <td>
+                            <button type="button" x-on:click="removeTask(task.title)" class="btn btn-danger btn-sm">Done</button>
+                            <span x-text="task.title"></span>
+                        </td>
+                    </tr>
+                </template>
+                
+            </table>
+        </div>  
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     </body>
 </html>

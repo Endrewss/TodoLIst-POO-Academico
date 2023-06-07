@@ -12,10 +12,6 @@ import model.Task;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/**
- *
- * @author gabri
- */
 @WebServlet(name = "TasksServlet", urlPatterns = {"/tasks"})
 public class TasksServlet extends HttpServlet {
 

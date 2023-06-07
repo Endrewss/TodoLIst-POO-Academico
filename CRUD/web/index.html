@@ -39,22 +39,26 @@
                 }
             }
         </script>
+        <!-- O IDEAL SERIA TRANSPOR ESSA NAV PARA OUTRO ARQUIVO E APAGAR E REFERENCIAR EM CADA HTML PARA QUE AS EDIÇÕES SEJAM HERDADAS POR TODOS -->        
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div class="container">
-                    <a class="navbar-brand" href="#">TO-DO LIST</a>
+                    <a class="navbar-brand" href="index.html">TO-DO LIST</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
-                                <a class="nav-link" href="#">TO-DO LIST</a>
+                                <a class="nav-link" href="index.html">TO-DO LIST</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">USUÁRIO</a>
+                                <a class="nav-link" href="users.html">ENTRAR</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">SAIR</a>
+                                <a class="nav-link" href="cadastro.html">CADASTRAR</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">SAIR</a>   <!-- ADICIONAR SAÍDA -->
                             </li>
                         </ul>
                     </div>
@@ -68,18 +72,21 @@
                     <div class="col col-xl-10">
                         <div class="card" style="border-radius: 15px;">
                             <div class="card text-center">
-                                <div class="card-header">
-                                    TO-DO LIST P.O.O.
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0">TO-DO LIST P.O.O.</h5>
                                 </div>
                             </div>
                                 
                             <div class="card-body p-5">
                                 <h6 class="mb-3">Afazeres:</h6>
-                                <div class="container m-2" x-data="tasks()" x-init="loadTasks()"> <!-- x-init deveria carregar todos as tasks assim que abre a pagina mas não está funcionando -->
+                                <div class="container m-2" x-data="tasks()" x-init="loadTasks()">
                                 <form class="d-flex justify-content-center align-items-center mb-4"">   
                                   <div class="form-outline flex-fill">
                                     <input type="text" id="form3" class="form-control form-control-lg" x-model="newTaskTitle" placeholder="Nova tarefa" />
-                                    <!--<label class="form-label" for="form3">Controle seus afazeres!</label>-->
+                                    
+                                    <!-- SE FORMOS ADICIONAR CATEGORIA, APÓS CRIAR AS FUNÇÕES DESCOMENTAR E ORGANIZAR CAMPO ABAIXO -->
+                                    <!-- <input type="text" id="form3" class="form-control form-control-lg" x-model="#" placeholder="Categoria" />-->
+                                   
                                   </div>
                                   <button type="button" class="btn btn-dark btn-lg ms-2" x-on:click="addTask()">Add</button>
                                 </form>
@@ -91,7 +98,8 @@
                                                 <span x-text="task.title"></span>
                                             </td>                                           
                                             <td class="text-end">
-                                                <button type="button" x-on:click="" class="btn btn-outline-dark btn-sm">Editar</button> <!--COLOCAR A FUNÇÃO EDITAR APÓS CRIADA-->
+                                                <!--COLOCAR A FUNÇÃO EDITAR NO BOTÃO ABAIXO APÓS CRIADA-->
+                                                <button type="button" x-on:click="" class="btn btn-outline-dark btn-sm">Editar</button> 
                                                 <button type="button" x-on:click="removeTask(task.title)" class="btn btn-outline-dark btn-sm">Excluir</button>
                                             </td>
 

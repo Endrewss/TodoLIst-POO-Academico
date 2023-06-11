@@ -5,102 +5,120 @@
  */
 package model;
 
+import database.ConnectionDB;
 import java.util.ArrayList;
 import java.sql.*;
-import web.Listener;
 
 /**
  *
  * @author Lucas Silva
  */
 public class User {
+
     private long rowId;
     private String name;
-    private String login;
-    private String role; // verificar se é um atributo necessário
     private String passwordHash;
-    
+
     // implementar mais requisitos na tabela caso o banco não se baseia no nosso modelo de negocio
-    public static String getCreateStatement() { 
+    public static String getCreateStatement() {
         return "CREATE TABLE IF NOT EXISTS users ("
-                + "login VARCHAR(50) UNIQUE NOT NULL,"
-                + "name VARCHAR(200) NOT NULL,"
-                + "role VARCHAR(20) NOT NULL," // acho que esse atributo não será necessário no nosso projeto, favor verificar em seguida
+                + "name VARCHAR(200) UNIQUE NOT NULL PRIMARY KEY,"
                 + "password_hash VARCHAR NOT NULL"
                 + ")";
     }
 
-    public static ArrayList<User> getUsers() throws Exception{
+    public static ArrayList<User> getUsers() throws Exception {
         ArrayList<User> list = new ArrayList<>();
-        Connection con = Listener.getConnection();
+        Connection con = ConnectionDB.getConnection();
         Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery ("SELECT rowid, * from users ");
-        
-        while(rs.next()) {
+        ResultSet rs = stmt.executeQuery("SELECT rowid, * from users");
+
+        while (rs.next()) {
             long rowId = rs.getLong("rowid");
-            String login = rs.getString("login");
             String name = rs.getString("name");
-            String role = rs.getString("role"); // verificar se esse atributo é necessário
             String passwordHash = rs.getString("password_hash");
-            list.add(new User(rowId, login, name, role, passwordHash)); // adiciona na lista o novo usuário com todos os parametros.
+            list.add(new User(rowId, name, passwordHash)); // adiciona na lista o novo usuário com todos os parametros.
         }
         rs.close();
         stmt.close();
         con.close();
         return list;
     }
-    
-    public static User getUser(String login, String password) throws Exception {
+
+    public static User getUser(String name, String password) throws Exception {
         User user = null;
-        Connection con = Listener.getConnection();
-        String sql = "SELECT rowid, * from users WHERE login=? AND password_hash=?";
+        Connection con = ConnectionDB.getConnection();
+        String sql = "SELECT rowid, * from users WHERE name=? AND password_hash=?";
         PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setString(1, login);
-        stmt.setString(2, Listener.getMd5Hash(password));
+        stmt.setString(1, name);
+        stmt.setString(2, ConnectionDB.getMd5Hash(password));
         ResultSet rs = stmt.executeQuery();
-        
-        if(rs.next()) {
+
+        if (rs.next()) {
             long rowId = rs.getLong("rowid");
-            String name = rs.getString("name");
-            String role = rs.getString("role");  // verificar se há necessidade de parametro
+            String name2 = rs.getString("name");
             String passwordHash = rs.getString("password_hash");
-            user = new User(rowId, login, name, role, passwordHash);
+            user = new User(rowId, name2, passwordHash);
         }
         rs.close();
         stmt.close();
         con.close();
         return user;
     }
-    
-    public static void insertUser(String login, String name, String role, String password) throws Exception {
-        Connection con = Listener.getConnection();
-        String sql = "INSERT INTO users(login, name, role, password_hash)"
-                       +"VALUES(?,?,?,?)";
-        PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setString(1, login);
-        stmt.setString(2, name);
-        stmt.setString(3, role);
-        stmt.setString(4, Listener.getMd5Hash(password));
-        stmt.execute();
-        stmt.close();
-        con.close(); 
+
+    public static boolean findByName(String name) throws Exception {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            con = ConnectionDB.getConnection();
+            String sql = "SELECT rowid, * from users WHERE name=?";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, name);
+            rs = stmt.executeQuery();
+
+            // Verifica se o usuário foi encontrado
+            if (rs.next()) {
+                return true;
+            }
+
+            return false;
+        } finally {
+            // Certifique-se de fechar os recursos (ResultSet, PreparedStatement e Connection)
+
+            rs.close();
+            stmt.close();
+            con.close();
+
+        }
     }
-    
-    public static void updateUser(String login, String name, String role, String password) throws Exception {
-        Connection con = Listener.getConnection();
-        String sql = "UPDATE users SET name=?, role=?, password_hash=? WHERE login=?";
+
+    public static void insertUser(String name, String password) throws Exception {
+        Connection con = ConnectionDB.getConnection();
+        String sql = "INSERT INTO users(name, password_hash)"
+                + "VALUES(?,?)";
         PreparedStatement stmt = con.prepareStatement(sql);
         stmt.setString(1, name);
-        stmt.setString(2, role);
-        stmt.setString(3, Listener.getMd5Hash(password));
-        stmt.setString(4, login);
+        stmt.setString(2, ConnectionDB.getMd5Hash(password));
         stmt.execute();
         stmt.close();
-        con.close(); 
+        con.close();
     }
-    
-    public static void deleteUser(long rowId) throws Exception{
-        Connection con = Listener.getConnection();
+
+    public static void updateUser(String name, String password) throws Exception {
+        Connection con = ConnectionDB.getConnection();
+        String sql = "UPDATE users SET name=?, password_hash=? WHERE name=?";
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, name);
+        stmt.setString(2, ConnectionDB.getMd5Hash(password));
+        stmt.execute();
+        stmt.close();
+        con.close();
+    }
+
+    public static void deleteUser(long rowId) throws Exception {
+        Connection con = ConnectionDB.getConnection();
         String sql = "DELETE FROM users WHERE rowid = ?";
         PreparedStatement stmt = con.prepareStatement(sql);
         stmt.setLong(1, rowId);
@@ -108,12 +126,10 @@ public class User {
         stmt.close();
         con.close();
     }
-    
-    public User(long rowId, String name, String login, String role, String passwordHash) {
+
+    public User(long rowId, String name, String passwordHash) {
         this.rowId = rowId;
         this.name = name;
-        this.login = login;
-        this.role = role; // lembrar de verificar aqui, caso exclua no metodo acima
         this.passwordHash = passwordHash;
     }
 
@@ -133,22 +149,6 @@ public class User {
         this.name = name;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getRole() { // aqui também
-        return role;
-    }
-
-    public void setRole(String role) { // e aqui
-        this.role = role;
-    }
-
     public String getPasswordHash() {
         return passwordHash;
     }
@@ -156,6 +156,4 @@ public class User {
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
-     
-    
 }

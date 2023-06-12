@@ -25,7 +25,7 @@
                             <h1>Bem Vindo Ao TodoList</h1>
                             <h3>O aplicativo ideal para gerenciar suas tarefas</h3>
                             <div class="text-start mt-3">
-                                <a href="./login" style="text-decoration: none;color:#fff"><button class="btn btn-success"style="width: 20%;padding: 16px">Acessar</button></a>
+                                <a href="./login" style="text-decoration: none;color:#fff"><button class="btn btn-dark"style="width: 20%;padding: 16px">Acessar</button></a>
                             </div>
                         </div>
                     </div>

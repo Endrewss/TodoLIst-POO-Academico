@@ -52,7 +52,7 @@
                                                 }%>
                                         </div>
 
-                                        <button type="submit" class="btn btn-warning btn-lg ms-2" style="color:white">Editar</button>
+                                        <button type="submit" class="btn btn-dark btn-lg ms-2">Editar</button>
                                     </form>
 
                                 </div>

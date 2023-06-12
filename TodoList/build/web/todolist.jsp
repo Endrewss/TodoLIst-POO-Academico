@@ -63,7 +63,7 @@
                                             </td>                                           
                                             <td class="text-center">
                                                 <form method="post"><input value="edit" name="typeForm" type="hidden"><button value="<%=item.getId()%>" name="itemId" type="submit" class="btn btn-outline-dark btn-sm">Editar</button></form>
-                                                <form method="post"><input value="delete" name="typeForm" type="hidden"><button value="<%=item.getId()%>" name="itemId" type="submit" class="btn btn-outline-dark btn-sm">Excluir</button></form>
+                                                <form method="post"><input value="delete" name="typeForm" type="hidden"><button value="<%=item.getId()%>" name="itemId" type="submit" class="btn btn-outline-dark btn-sm m1-2">Excluir</button></form>
                                             </td>
                                         </tr>
                                         <%}%>
